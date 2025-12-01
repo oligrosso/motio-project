@@ -1,0 +1,63 @@
+# ========================
+# SISTEMA OPERATIVO (Mac)
+# ========================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ========================
+# PYTHON (Software y Análisis)
+# ========================
+# Archivos compilados (basura automática de Python)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos Virtuales (para que no subas tu carpeta de librerías)
+venv/
+env/
+.env
+.venv
+/opt/anaconda3/
+
+# Jupyter Notebooks (por si usas notebooks)
+.ipynb_checkpoints
+
+# ========================
+# ARDUINO / ESP8266 (Firmware)
+# ========================
+# Archivos de compilación temporal y binarios
+*.hex
+*.bin
+*.elf
+*.d
+*.o
+output/
+debug/
+
+# Si usas PlatformIO en VS Code
+.pio/
+.pioenvs/
+
+# ========================
+# DATOS SENSIBLES (¡IMPORTANTE!)
+# ========================
+# Ignorar todos los archivos de datos para proteger privacidad de pacientes
+*.csv
+*.xlsx
+*.xls
+*.txt
+*.log
+
+# Excepción: Si quieres subir un archivo de ejemplo vacío para que otros prueben
+# (Quita el '#' de la siguiente línea si creas ese archivo)
+# !software/data_analysis/ejemplo_dummy.csv
+
+# ========================
+# EDITORES DE CÓDIGO
+# ========================
+.vscode/
+.idea/
+*.swp
+
