@@ -1,4 +1,3 @@
-#código para leer los datos transmitidos por el wifi del microcontrolador
 import socket
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -24,13 +23,13 @@ sock.bind((UDP_IP, UDP_PORT))
 sock.setblocking(False)
 
 # --- CSV DE DATOS ---
-csv_path = f"/Users/alexasessarego/Documents/DatosPacientes/{filename}.csv"
+csv_path = f"/Users/alexasessarego/Documents/DatosPacientes/{filename}.csv" # path datos
 data_csv = open(csv_path, "w", newline="")
 data_writer = csv.writer(data_csv)
 data_writer.writerow(["Timestamp", "Yaw", "Pitch", "Roll", "Ax", "Ay", "Az"])
 
 # --- CSV DE ACTIVIDADES ---
-act_csv_path = f"/Users/alexasessarego/Documents/DatosPacientes/Notas_{filename}.csv"
+act_csv_path = f"/Users/alexasessarego/Documents/DatosPacientes/Notas_{filename}.csv" # path actividades
 act_csv = open(act_csv_path, "w", newline="")
 act_writer = csv.writer(act_csv)
 act_writer.writerow(["inicio", "fin", "actividad"])

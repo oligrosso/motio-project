@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "usini_sensors")(type "KiCad")(uri "${KIPRJMOD}/usini_sensors.pretty")(options "")(descr ""))
+  (lib (name "micro_sd")(type "KiCad")(uri "${KIPRJMOD}/micro_sd.pretty")(options "")(descr ""))
+)
