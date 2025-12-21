@@ -453,7 +453,7 @@ def frecuencia_temblor(df, episodios, SR):
     # 1. Copiar y Pre-filtrar (Pasa altos a 0.5Hz para limpiar deriva)
     df_clean = df.copy()
     for axis in ['Yaw', 'Pitch', 'Roll']:
-        df_clean[axis] = pasa_altos_iir(df_clean[axis], SR, fc=0.5)
+        df_clean[axis] = pasa_altos_iir(df_clean[axis], SR, fc=1.5)
 
     todas_psd = []
     frecuencias_individuales = []
@@ -543,8 +543,8 @@ def frecuencia_temblor(df, episodios, SR):
 if __name__ == "__main__":
     
     # === CONFIGURACIÓN ===
-    BASE_DIR = "/Users/alexasessarego/Documents/DatosPacientes"
-    PACIENTE = "Paciente1"
+    BASE_DIR = "/Users/alexasessarego/Documents"
+    PACIENTE = "mpu_data01"
     
     # ----------------------------------------------------
     # AQUÍ DEFINES EL TAMAÑO Y PASO UNA SOLA VEZ:
