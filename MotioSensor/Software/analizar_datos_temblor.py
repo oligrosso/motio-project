@@ -127,7 +127,7 @@ def metodo_burg_umbralizado(window, SR):
 
     # Criterio de detección
     temblor = False
-    if 3.5 < f_dom < 7.5 and amp_dom > 0.03: # Umbral ajustado a 0.03
+    if 3.5 < f_dom < 6 and amp_dom > 0.03: # Umbral ajustado a 0.03
         temblor = True
 
     return temblor, f_dom, amp_dom
@@ -201,9 +201,9 @@ def detectar_temblor(df, SR, window_sec, step_samples, mostrar_pasos=False):
             yaw_centers, pitch_centers, roll_centers)
 
 def cuantificar_temblor(df, SR, temblores, centers, window_size, graph=False):
-    yaw_band = pasa_bandas_iir(df['Yaw'], SR, 3.5, 7.5)
-    pitch_band = pasa_bandas_iir(df['Pitch'], SR, 3.5, 7.5)
-    roll_band = pasa_bandas_iir(df['Roll'], SR, 3.5, 7.5)
+    yaw_band = pasa_bandas_iir(df['Yaw'], SR, 3.5, 6)
+    pitch_band = pasa_bandas_iir(df['Pitch'], SR, 3.5, 6)
+    roll_band = pasa_bandas_iir(df['Roll'], SR, 3.5, 6)
     
     rms_ypr = np.sqrt(yaw_band**2 + pitch_band**2 + roll_band**2)
     
@@ -544,8 +544,7 @@ if __name__ == "__main__":
     
     # === CONFIGURACIÓN ===
     BASE_DIR = "/Users/alexasessarego/Documents"
-    PACIENTE = "mpu_data01"
-    
+    PACIENTE = "mpu_data08"
     # ----------------------------------------------------
     # AQUÍ DEFINES EL TAMAÑO Y PASO UNA SOLA VEZ:
     DURACION_VENTANA_SEG = 3  # Tamaño de ventana en segundos
