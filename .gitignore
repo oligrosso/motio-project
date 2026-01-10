@@ -11,7 +11,10 @@ test_venv/
 # PyInstaller
 build/
 dist/
+
+# Ignore all spec files EXCEPT the main one
 *.spec
+!MotioMetrics/desktop/MotioMetrics.spec
 
 # OS / IDE
 .DS_Store
