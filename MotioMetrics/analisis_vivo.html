@@ -1,0 +1,188 @@
+<!-- Interfaz web para visualizar en tiempo real los datos de MotioSensor -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MotioMetrics – Análisis en Vivo</title> 
+  <link rel="icon" type="image/png" href="motio-logo-silueta-azul.png">
+  <link href="styles.css" rel="stylesheet" /> 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    /* Estilos adicionales para la interfaz en vivo */
+    
+    /* Layout para el dashboard en vivo */
+    .live-dashboard {
+      display: grid;
+      grid-template-columns: 420px minmax(700px, 1fr); /* 🔥 gráfico más ancho */
+      gap: 32px;
+      justify-content: stretch; /* 🔥 ocupa todo el ancho disponible */
+    }
+
+    /* Ocultar elementos por defecto */
+    #liveDashboard {
+      display: none;
+    }
+
+    .annotation-area {
+      width: 420px;
+    }
+
+    /* Cards de la columna izquierda */
+    .annotation-area .card {
+      width: 100%;
+    }
+
+    .annotation-input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .annotation-input-group input {
+      flex: 1; /* El input ocupa el espacio */
+    }
+
+    /* Lista de actividades registradas */
+    #activityList {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      max-height: 400px; /* Altura máxima antes de scrollear */
+      overflow-y: auto;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    #activityList li {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    #activityList li:last-child {
+      border-bottom: none;
+    }
+    #activityList li strong {
+      color: var(--accent);
+      margin-right: 8px;
+    }
+
+    /* Adaptación móvil para la vista en vivo */
+    @media (max-width: 768px) {
+      .live-dashboard {
+        grid-template-columns: 1fr; /* Apilar en móvil */
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <!-- Cabecera estándar con enlace de regreso -->
+      <a href="index.html" class="header-branding">
+        <img src="motio-logo-silueta-blanca.png" alt="Motio Logo" class="app-logo">
+        <div class="title-group">
+            <h1>Análisis en Vivo</h1>
+            <div class="subtitle">Datos del MotioSensor en tiempo real</div>
+        </div>
+      </a>
+      <!-- Botón de Conexión/Grabación -->
+      <div class="toolbar">
+        <button class="btn" id="btnStopAnalyze" style="display:none;">⏹ Detener y Analizar</button>
+      </div>
+    </header>
+
+    <div class="main-content">
+      
+      <!-- 1. Mensaje de Conexión Inicial -->
+      <div class="status-message" id="connectionPrompt">
+        <i class="fas fa-wifi" style="font-size: 3rem; color: var(--accent); margin-bottom: 15px;"></i>
+        <h2>Esperando Conexión</h2>
+        <p class="muted">Asegúrate de que el MotioSensor esté encendido y en la misma red. Luego, presiona "Conectar" e ingresa un nombre para la sesión.</p>
+        <p class="muted small" id="connectionStatus">Estado: Desconectado</p>
+        <button class="btn-primary" id="btnConnect">🛜 Conectar MotioSensor</button>
+      </div>
+
+      <!-- 2. Dashboard en Vivo (Oculto por defecto) -->
+      <div class="live-dashboard" id="liveDashboard">
+    
+        <!-- Columna Izquierda: Anotaciones -->
+        <div class="col-left annotation-area">
+          <section class="card">
+            <h2><i class="fas fa-pencil-alt"></i> Registrar Actividad</h2>
+            <div class="content annotation-input-group">
+              <input type="text" id="activityInput" placeholder="Ej: pronación, supinación...">
+              <button class="btn" id="btnNewActivity">Registrar</button>
+            </div>
+          </section>
+      
+          <section class="card" style="flex: 1;">
+            <h2>Actividades Registradas</h2>
+            <div class="content" style="padding: 0;">
+              <ul id="activityList">
+                <li><em class="muted">Aún no hay actividades...</em></li>
+              </ul>
+            </div>
+          </section>
+        </div>
+
+        <!-- Columna Derecha: Gráfico en Vivo -->
+        <div class="col-right">
+          <section class="card" style="flex: 1;">
+            <h2>Giroscopio (Yaw, Pitch, Roll)</h2>
+            <div class="content chart-wrap" style="height: 500px;">
+              <!-- Canvas para el gráfico de 3 ejes -->
+              <canvas id="liveChartYPR"></canvas>
+            </div>
+          </section>
+        </div>
+
+      </div>
+
+    </div> 
+
+    <footer>
+      <div>© 2025 Grupo 1 – Instrumentación Biomédica II (ITBA)</div>
+    </footer>
+  </div>
+  <!-- Modal después de detener -->
+  <!-- Modal después de detener -->
+  <div id="modalAnalizar" class="card"
+      style="display:none; position:fixed; top:50%; left:50%;
+              transform:translate(-50%,-50%);
+              width:400px; z-index:1000;
+              box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+    
+    <div class="content" style="text-align:center; padding:30px;">
+      <h3 style="margin:0 0 20px 0;">¿Quiere analizar sus datos registrados?</h3>
+
+      <div style="display:flex; gap:12px; justify-content:center;">
+        <button class="btn-primary" id="btnAnalizarCsv" style="padding:10px 20px; font-size:16px;">
+          Analizar .CSV
+        </button>
+
+        <button class="btn" id="btnVolverInicio" style="padding:10px 20px; font-size:16px;">
+          No
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay oscuro -->
+  <div id="modalOverlay"
+      style="display:none; position:fixed; top:0; left:0;
+              width:100%; height:100%;
+              background:rgba(0,0,0,0.5); z-index:999;"></div>
+
+
+
+  <!-- Overlay oscuro -->
+  <div id="modalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999;"></div>
+
+  <!-- Lógica de SocketIO ya no es estrictamente necesaria si usamos polling, pero la de ChartJS sí -->
+  <script src="analisis_vivo.js"></script>
+</body>
+</html>

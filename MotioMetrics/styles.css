@@ -1,0 +1,626 @@
+/* === VARIABLES DE COLOR === */
+:root {
+  --bg: #f8fafc;                /* fondo base */
+  --gradient: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+  --text: #1e293b;              /* texto principal */
+  --muted: #64748b;             /* texto secundario */
+  --border: #d1d5db;            /* bordes suaves */
+  --accent: #0284c7;            /* celeste principal */
+  --accent-light: #bae6fd;      /* celeste suave */
+  --highlight: #0ea5e9;         /* celeste más vivo */
+  --card-bg: #ffffff;           /* fondo de las cards */
+  --success: #16a34a;           /* Verde principal para éxito */
+  --success-light: #dcfce7;     /* Verde suave para fondo */
+  --error: #dc2626;             /* Rojo para error */
+  --error-light: #fee2e2;       /* Rojo suave para fondo */
+  
+}
+
+/* === CONFIGURACIÓN GLOBAL === */
+* {
+  box-sizing: border-box;
+  font-family: "Inter", "Open Sans", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--gradient);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+/* --- REORGANIZACIÓN: LAYOUT PRINCIPAL --- */
+.app {
+  width: 100%;
+  max-width: 1100px;
+  /* Reducimos el padding inferior para ganar espacio */
+  padding: 24px 16px 16px; 
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  /* El .app ahora estira su contenido para ocupar el alto */
+  min-height: 100vh; 
+}
+
+/* Nuevo contenedor para el layout de dos columnas */
+.main-content {
+  display: grid;
+  /* 1/3 para la izquierda (col-left) y 2/3 para la derecha (col-right) */
+  grid-template-columns: 1fr 2fr; 
+  gap: 24px; 
+  /* Crucial: Esto permite que el contenido ocupe el espacio restante en el alto */
+  flex: 1; 
+  /* Asegura que el contenido se estire correctamente */
+  min-height: 0; 
+}
+
+/* Contenedor de la columna izquierda, usa flex para apilar las cards */
+.col-left {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+/* Contenedor de la columna derecha, usa flex para apilar las cards */
+.col-right {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ESTIRAR GRÁFICOS */
+/* Aplicamos flex: 1 a las cards de los gráficos en la columna derecha 
+   para que ocupen el espacio vertical disponible */
+.col-right section.card:nth-child(2), /* Porcentaje de temblor según la UPDRS */
+.col-right section.card:nth-child(3)  /* Análisis de frecuencia y amplitud */
+{
+    flex: 1; 
+    /* Esto es crucial para que los hijos con height: 100% funcionen */
+    min-height: 0; 
+}
+
+/* ASEGURAR COMPACTICIDAD DEL RESUMEN UPDRS */
+/* La primera card en col-right es el resumen UPDRS y no debe estirarse */
+.col-right section.card:first-child {
+    flex: 0 0 auto; 
+}
+
+/* --- ESTILOS EXISTENTES --- */
+
+/* === HEADER === */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-bottom: 15px 25px; /*antes estaba padding-bottom 8px*/
+}
+
+/* Contenedor de Logo + Título/Subtítulo (sirve como botón de regreso) */
+.header-branding {
+  display: flex;
+  align-items: center;
+  text-decoration: none; /* Quitar subrayado del enlace */
+  color: var(--text); /* Usar color de texto principal */
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.header-branding:hover {
+    opacity: 0.85;
+}
+
+/* Estilo para el nuevo logo */
+.app-logo {
+  height: 50px; /* Mismo tamaño que el .logo original */
+  width: auto;
+  margin-right: 15px;
+  border-radius: 16px !important;
+
+  /* Si la silueta no es blanca, puedes usar filter para invertirla */
+  /* filter: invert(100%); */ 
+}
+
+/* Contenedor de Título y Subtítulo */
+.title-group {
+  display: flex;
+  flex-direction: column; /* Título arriba, Subtítulo abajo */
+}
+
+.title-group h1 {
+  margin: 0;
+  font-size: 1.4rem; /* Más grande que el subtítulo, antes estaba 24px*/
+  font-weight: 700;
+}
+
+.title-group .subtitle {
+  font-size: 0.85rem; /*antes estaba 14px*/
+  opacity: 0.8;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* === BOTONES Y TOOLBAR === */
+.toolbar {
+  display: flex;
+  gap: 10px; /* es el espacio entre botones, antes 8px*/
+  /*margin-top: 8px;*/
+  align-items: center;
+}
+
+.btn,
+.btn-primary {
+  border: 1px solid var(--border);
+  border-radius: 8px; /* Reducido un poco */
+  padding: 6px 12px; /* Reducido un poco */
+  cursor: pointer;
+  background: var(--card-bg);
+  transition: all 0.15s ease;
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.btn:hover {
+  background: var(--accent-light);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--highlight);
+}
+
+input[type="file"] {
+  display: none;
+}
+
+/* === RESPONSIVIDAD (Media Query) SI SE ABRE DESDE UN CELULAR === */
+@media (max-width: 768px) { /*se aplican los estilos solo si el ancho de la ventana o del dispositivo es de 768 px o menos*/
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 10px 15px; /* Ajuste de padding en móvil */
+    }
+    
+    .toolbar {
+        width: 100%;
+        justify-content: space-around;
+    }
+    .toolbar .btn, .toolbar .btn-primary {
+        flex: 1; /* Para que los botones se estiren */
+        text-align: center;
+    }
+    
+    .main-content {
+      /* En móvil, las columnas se apilan */
+      grid-template-columns: 1fr; 
+    }
+    
+    .full-width-card {
+      /* También se ajusta a 1 columna */
+      grid-column: 1 / 1; 
+    }
+    
+    .chart-wrap {
+      /* Reducir altura de gráficos en móvil para ahorrar espacio vertical */
+      height: 300px; 
+    }
+}
+
+/* === CARDS === */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px; /* Reducido un poco */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  flex: 0 0 auto; /* Importante para que las cards de la izquierda no se estiren */
+}
+
+.card h2 {
+  font-size: 16px; /* Reducido un poco */
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 14px; /* Reducido un poco */
+  margin: 0;
+  background: #f9fafb;
+  border-radius: 10px 10px 0 0;
+}
+
+.card .content {
+  padding: 12px 14px; /* Reducido un poco */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Permite que las cards y gráficos de la derecha se estiren */
+.col-right .card {
+    flex: 0 0 auto; 
+    min-height: 0; 
+}
+
+/* === BLOQUE ARCHIVO === */
+.dropzone {
+  border: 2px dashed var(--accent-light);
+  border-radius: 8px;
+  text-align: center;
+  padding: 15px; /* Reducido un poco */
+  color: var(--muted);
+  font-size: 14px; /* Reducido un poco */
+  background: #f0f9ff;
+  transition: all 0.2s ease;
+}
+
+.dropzone:hover {
+  border-color: var(--accent);
+  background: #e0f2fe;
+}
+
+/* --- ESTILOS DND --- */
+
+/* Estado cuando se arrastra un archivo sobre el dropzone */
+.dropzone.drag-over {
+  border-color: var(--accent);
+  background: #e0f2fe;
+}
+
+/* Estado de éxito (archivo cargado) */
+.dropzone.success {
+  border: 2px solid var(--success);
+  background: var(--success-light);
+  color: var(--text); /* Texto principal para el nombre del archivo */
+  font-weight: 500;
+}
+/* Estado de error (archivo no válido) */
+.dropzone.error {
+  border: 2px solid var(--error);
+  background: var(--error-light);
+  color: var(--error);
+  font-weight: 500;
+}
+
+/* === FORMULARIO DE PACIENTE === */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Minimo más pequeño */
+  gap: 10px; /* Reducido un poco */
+}
+
+label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px; /* Reducido un poco */
+  font-size: 14px;
+  color: var(--text);
+  background: #fff;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px; /* Reducido un poco */
+}
+
+.chart-wrap{
+  width: 100%;
+  margin: 0 auto;
+}
+
+.chart-wrap canvas{
+  width: 100% !important;
+  height: auto !important;
+}
+
+
+#chartFreqAmp, #chartRMSTime {
+    height: 100%; /* Asegura que el canvas use el espacio */
+    width: 100%;
+}
+
+
+/* === TABLA HISTÓRICA === */
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px; /* Reducido un poco */
+}
+
+.history-table th,
+.history-table td {
+  border: 1px solid var(--border);
+  padding: 6px 8px; /* Reducido un poco */
+  text-align: center;
+}
+
+.history-table th {
+  background: #f1f5f9;
+  color: var(--muted);
+}
+
+/* === FOOTER === */
+footer {
+  text-align: center;
+  font-size: 13px; /* Reducido un poco */
+  color: var(--muted);
+  padding-top: 16px; /* Reducido un poco */
+  border-top: 1px solid var(--border);
+}
+
+/* === UTILIDADES === */
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 13px;
+}
+
+/* Estilo para la card que ocupa ambas columnas */
+.full-width-card {
+  grid-column: 1 / -1; /* Ocupa desde la primera columna hasta la última */
+}
+
+/* === NUEVOS ESTADOS DE DROPZONE === */
+
+/* Estado de cargando */
+.dropzone.loading {
+  background-color: var(--accent-light); /* Un color suave para indicar proceso */
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 500;
+  border-style: solid; /* Borde sólido mientras carga */
+  cursor: wait;
+  /* Añadimos un efecto sutil de progreso/movimiento */
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--accent-light),
+    var(--accent-light) 10px,
+    #e0f2fe 10px,
+    #e0f2fe 20px
+  );
+  background-size: 200% 100%;
+  animation: progress-stripes 1.5s linear infinite;
+}
+
+@keyframes progress-stripes {
+  from { background-position: 0 0; }
+  to { background-position: -200% 0; }
+}
+
+/* Estado de éxito */
+.dropzone.success {
+  background-color: var(--success-light);
+  border-color: var(--success);
+  color: var(--success);
+  font-weight: 500;
+  border-style: solid;
+}
+
+/* Estado de error */
+.dropzone.error {
+  background-color: var(--error-light);
+  border-color: var(--error);
+  color: var(--error);
+  font-weight: 500;
+  border-style: solid;
+}
+/* === NUEVOS ESTADOS DE DROPZONE === */
+
+/* Estado de cargando/analizando */
+.dropzone.loading {
+  background-color: var(--accent-light); /* Un color suave para indicar proceso */
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 500;
+  border-style: solid; /* Borde sólido mientras carga */
+  cursor: wait;
+  /* Añadimos un efecto sutil de progreso/movimiento */
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--accent-light),
+    var(--accent-light) 10px,
+    #e0f2fe 10px,
+    #e0f2fe 20px
+  );
+  background-size: 200% 100%;
+  animation: progress-stripes 1.5s linear infinite;
+}
+
+@keyframes progress-stripes {
+  from { background-position: 0 0; }
+  to { background-position: -200% 0; }
+}
+
+/* Estado de éxito */
+.dropzone.success {
+  background-color: var(--success-light);
+  border-color: var(--success);
+  color: var(--success);
+  font-weight: 500;
+  border-style: solid;
+}
+
+/* Estado de error */
+.dropzone.error {
+  background-color: var(--error-light);
+  border-color: var(--error);
+  color: var(--error);
+  font-weight: 500;
+  border-style: solid;
+}
+
+/* === LIVE ANALYSIS STATUS === */
+.status-message { /* bloque que aparece antes de conectar el sensor */
+  grid-column: 1 / -1;     /* 🔥 ocupa las 2 columnas del grid */
+  justify-self: center;    /* 🔥 se centra dentro del grid */
+
+  text-align: center;
+  padding: 32px 28px;
+  background-color: var(--card-bg);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+
+  width: min(560px, 92vw); /* tamaño acorde al texto */
+  margin: 60px 0 0;        /* sin auto, porque ya centra el grid */
+}
+
+
+.status-message h2 {
+  color: var(--accent);
+  margin-top: 0;
+}
+
+/* Botón Conectar centrado abajo de "Esperando Conexión" */
+#connectionPrompt #btnConnect {
+  display: block;
+  margin: 22px auto 0;
+  padding: 12px 22px;     /* más grande */
+  font-size: 18px;
+
+  background-color: #f0f9ff; /* mismo look que Guardar Paciente / Agregar Observación */
+  color: var(--accent);
+  border: 1px solid var(--accent-light);
+}
+
+#connectionPrompt #btnConnect:hover {
+  background-color: #e0f2fe;
+}
+
+
+/* === UPDRS Data Grid (analisis_csv) === */
+.data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    align-items: center;
+    text-align: center;
+}
+.data-pair {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.data-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+}
+.data-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+}
+.large-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--highlight);
+}
+.full-width {
+    grid-column: 1 / -1; /* Ocupa todas las columnas */
+    text-align: center;
+}
+
+/* --- SPINNER DE CARGA PARA SECCIONES --- */
+.section-loader {
+  display: none; /* Oculto por defecto */
+  border: 4px solid #f3f3f3; /* Gris claro */
+  border-top: 4px solid var(--brand-blue); /* Azul de tu marca */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 30px auto; /* Centrado */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Clase para ocultar contenido mientras carga (opcional, para limpieza visual) */
+.hidden-loading {
+  display: none !important;
+}
+
+/* === FORMULARIO DE PACIENTE === */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+
+.form-group input, .form-group select {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-group input[type="date"], .form-group select {
+  width: 100%;
+}
+
+/* Botón Ver más... */
+.btn-ver-mas {
+  background: var(--accent-light);
+  color: var(--accent);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.btn-ver-mas:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.form-group input[type="search"]::placeholder {
+  color: #64748b; /* Muted */
+}
+
+#btnGuardarPaciente, #btnAddObservation {
+  background-color: #f0f9ff !important;
+  color: #0284c7 !important;  /* Texto azul para contraste */
+}
+#btnGuardarPaciente:hover, #btnAddObservation:hover {
+  background-color: #e0f2fe !important;
+}
+
+/* === UNIFICAR TAMAÑO DE TEXTO DENTRO DE TODAS LAS CARDS === */
+/* Esto afecta labels, inputs, selects y textarea en todas las secciones */
+.card .content label {
+  font-size: 13px !important;   /* Más pequeño, igual que Observaciones */
+  margin-bottom: 4px;
+}
+
+.card .content input,
+.card .content select,
+.card .content textarea {
+  font-size: 14px !important;   /* Igual que textarea de Observaciones */
+  padding: 7px 8px;             /* Un poquito menos padding para que quede compacto */
+}

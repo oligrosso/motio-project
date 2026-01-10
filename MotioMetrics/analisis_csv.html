@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MotioMetrics – Análisis de Archivo</title>
+  <link rel="icon" type="image/png" href="motio-logo-silueta-azul.png">
+
+  <link href="styles.css" rel="stylesheet" />
+  <!-- Librerías de Gráficos -->
+  <!-- CORRECCIÓN: Usamos una versión específica y estable de Plotly (v2.27.0) -->
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  
+  <!-- ¡Los estilos de cabecera ahora están en styles.css! -->
+</head>
+
+<body>
+  <div class="app">
+
+    <header>
+
+      <!-- Bloque de Branding (Logo + Título/Subtítulo) - Funciona como botón de regreso a index.html -->
+      <a href="index.html" class="header-branding">
+        <img src="motio-logo-silueta-blanca.png" alt="Motio Logo" class="app-logo">
+        <div class="title-group">
+            <h1>MotioMetrics - Análisis de Archivo</h1>
+            <div class="subtitle">Análisis de datos registrados de MotioSensor en pacientes</div>
+        </div>
+      </a>
+
+      <div class="toolbar">
+        <label class="btn" for="fileInput">📁 Cargar archivo</label>
+        <button class="btn-primary" id="btnExport">📄 Exportar informe</button>
+        <input id="fileInput" type="file" accept=".csv" />
+      </div>
+    </header>
+
+    <div class="main-content">
+        
+      <div class="col-left">
+        
+        <section class="card">
+          <h2>Datos de archivo</h2>
+          <div class="content">
+            <div id="dropzone" class="dropzone">
+            <strong>Arrastrá y soltá un archivo .csv acá</strong>
+              <p class="muted" style="margin: 5px 0 0 0;">o usá "Cargar archivo".</p>
+              <!-- Elementos para feedback visual -->
+              <div id="spinner" class="spinner" style="display: none;"></div>
+              <div id="dropzone-message" class="message"></div>
+            </div>
+            </div>
+        </section>
+
+        <!-- Nueva sección: Datos del paciente -->
+        <section class="card">
+          <h2>Datos del paciente</h2>
+          <div class="content">
+            <div class="form-group">
+              <label>Nombre y apellido</label>
+              <input type="text" id="nombrePaciente" list="sugerenciasPacientes" placeholder="Ej: Juan Pérez">
+              <datalist id="sugerenciasPacientes"></datalist>
+            </div>
+            <div class="form-group">
+              <label>ID o historia clínica</label>
+              <input type="text" id="idHistoria" placeholder="Ej: HCL1234">
+            </div>
+            <div class="form-group">
+              <label>Edad</label>
+              <input type="number" id="edadPaciente" placeholder="Ej: 65">
+            </div>
+            <div class="form-group">
+              <label>Género</label>
+              <select id="generoPaciente">
+                <option>Seleccionar...</option>
+                <option>Masculino</option>
+                <option>Femenino</option>
+                <option>Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Posición del MotioSensor</label>
+              <select id="posicionDispositivo">
+                <option>Seleccionar...</option>
+                <option>Muñeca derecha</option>
+                <option>Muñeca izquierda</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Fecha de la medición</label>
+              <input type="date" id="fechaMedicion">
+            </div>
+            <button class="btn-primary" id="btnGuardarPaciente">💾 Guardar paciente</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Observaciones</h2>
+          <div class="content">
+            <label>Actividad / Descripción</label>
+            <textarea id="obsDescription" rows="2" placeholder="Ej: Conduciendo un automóvil."></textarea>
+          </div>
+          <div class="content grid" style="grid-template-columns: 1fr 1fr; padding-top: 0; padding-bottom: 12px;"> 
+            <div>
+              <label>Hora de inicio</label>
+              <input id="obsStartTime" type="time" />
+            </div>
+            <div>
+              <label>Hora de fin</label>
+              <input id="obsEndTime" type="time" />
+            </div>
+          </div>
+          
+          <div class="content" style="padding-top: 0;">
+            <button class="btn-primary" id="btnAddObservation">➕ Agregar observación</button>
+          </div>
+          
+          <div class="content" style="padding-top: 8px;"> 
+            <h4 class="muted small" style="margin-bottom: 8px; font-weight: 600;">Observaciones registradas:</h4>
+            <div id="observationList" class="muted small" style="border-top: 1px solid var(--border); padding-top: 8px;">
+                No hay observaciones.
+            </div>
+          </div>
+        </section>
+
+      </div> <div class="col-right">
+    
+        <section class="card">
+          <h2>Métricas Principales</h2>
+          <!-- Contenido actualizado para mostrar valores numéricos -->
+          <div class="content">
+          <div id="loader-metrics" class="section-loader"></div>
+
+          <div id="content-metrics" class="content data-grid" style="grid-template-columns: 1fr; gap: 20px;">
+            <div class="metric-card">
+              <span class="metric-label">Frec. Dominante Promedio</span>
+              <span class="metric-value" id="valor-f-dom">-- Hz</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Pico PSD Promedio</span>
+              <span class="metric-value" id="valor-psd-peak">--</span>
+            </div>
+            <p id="texto-estado-temblor" class="muted" style="text-align: center; margin-top: 10px;">
+              Valores promedio calculados.
+            </p>
+          </div>
+         </div>
+        </section>
+
+        <section class="card">
+          <h2>Espectro de Potencia (PSD) - Método de Burg</h2> <!-- Cambiado de "Análisis de frecuencia y amplitud" -->
+          <div class="content chart-wrap">
+            <div id="loader-chart1" class="section-loader"></div>
+            <!-- ¡ACTUALIZADO! Cambiado de <canvas> a <div> para Plotly -->
+            <div id="chartFreqAmp"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Detección de Temblor en el Tiempo</h2>
+          <div class="content chart-wrap">
+            <!-- ¡ACTUALIZADO! Cambiado de <canvas> a <div> para Plotly -->
+            <div id="loader-chart2" class="section-loader"></div>
+            <div id="chartRMSTime"></div>
+          </div>
+        </section>
+        
+      </div>
+      <section class="card full-width-card">
+        <h2>Comparación con Mediciones Anteriores</h2>
+        <div class="content">
+          <p class="muted">Resumen de registros previos del paciente.</p>
+          <div id="loader-history" class="section-loader"></div>
+          
+          <div id="content-history">
+          <table id="tableHistory" class="history-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Detección de temblor</th>
+                <th>Frecuencia dominante (Hz)</th>
+                <th>Pico PSD</th>
+                <th>Posición del MotioSensor</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div id="verMasContainer" style="text-align: center; margin-top: 10px;">
+           <!-- Aquí se insertará el botón "Ver más..." dinámicamente -->
+          </div>
+        </div>
+       </div>
+      </section>
+
+    </div> <footer>
+      <div>© 2025 Grupo 1 – Instrumentación Biomédica II (ITBA)</div>
+      <div class="muted small">MVP de ficha médica digital – Proyecto de monitoreo en Parkinson</div>
+    </footer>
+  </div>
+  <!-- 2. IMAGEN OCULTA PARA EL REPORTE PDF (Se carga aquí pero no se ve) -->
+  <img id="pdf-logo-hidden" src="motio-logo-silueta-blanca-sin-fondo.png" style="display: none;">
+
+  <!-- Modal para confirmar origen y pedir hora inicio -->
+  <div id="modalConfirm" class="card" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:380px; z-index:1000; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+    <div class="content" style="text-align:center; padding:20px;">
+      <h3 style="margin:0 0 15px 0; color:var(--text);">¿Es el archivo obtenido de la tarjeta miniSD del MotioSensor?</h3>
+      <div style="display:flex; gap:15px; justify-content:center;">
+        <button class="btn-primary" id="btnModalSi">Sí</button>
+        <button class="btn" id="btnModalNo">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalHoraInicio" class="card" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:380px; z-index:1000; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+    <div class="content" style="padding:20px;">
+      <label style="display:block; margin-bottom:10px;">Hora de inicio de la medición</label>
+      <input type="time" id="inputHoraInicio" style="width:100%; padding:8px; font-size:14px;">
+      <div style="margin-top:15px; text-align:right;">
+        <button class="btn-primary" id="btnHoraContinuar">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fondo oscuro detrás del modal -->
+  <div id="modalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999;"></div>
+  <script src="analisis_csv.js"></script>
+</body>
+</html>
