@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MotioMetrics – Inicio</title>
+  <link rel="icon" type="image/png" href="assets/motio-logo-silueta-azul.png">
+  <!-- Asumimos que styles.css ya carga las variables de color, tipografía Inter, etc. -->
+  <link href="styles.css" rel="stylesheet" /> 
+  <style>
+    /* ======================================================
+    ESTILOS ESPECÍFICOS DE LA LANDING PAGE
+    ======================================================
+    */
+    /* Definimos el color del título basado en el color primario de tu backend */
+    :root {
+      --brand-blue: #102C59; /* Color basado en tu logo original */
+      --accent: #0284c7; 
+      --text: #1e293b;
+      --card-bg: #ffffff;
+      --border: #d1d5db;
+    }
+
+    .landing-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh; /* Ocupa toda la altura de la vista */
+      padding: 40px 20px;
+      gap: 30px;
+    }
+    
+    .logo-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    /* Título principal grande con el color y peso de la marca */
+    .app-title {
+      font-size: clamp(32px, 5vw, 48px); /* Responsive font size */
+      color: var(--brand-blue); 
+      font-weight: 800; /* Letra bien gordita */
+      margin: 0;
+      text-align: center;
+    }
+
+    .logo-container {
+      margin-top: 15px;
+    }
+    
+    .logo-img {
+      width: clamp(80px, 15vw, 120px);
+      height: auto;
+      display: block;
+    }
+
+    /* Contenedor de las dos tarjetas de opción */
+    .landing-options {
+      display: flex;
+      flex-wrap: wrap; /* Permite que se apilen en móvil */
+      gap: 30px;
+      justify-content: center;
+      width: 100%;
+      max-width: 900px;
+      margin-top: 40px;
+    }
+    
+    /* Estilo para las tarjetas/botones de opción */
+    .option-card {
+      /* Estilo base de la card, pero más grande y clickable */
+      flex: 1 1 350px; /* Flexbox para ancho adaptable */
+      min-height: 200px;
+      text-align: center;
+      padding: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid var(--border);
+      text-decoration: none; /* Quitar subrayado del enlace */
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .option-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 10px 20px rgba(2, 132, 199, 0.15);
+      transform: translateY(-5px);
+    }
+    
+    .option-card h3 {
+      font-size: 24px;
+      margin-top: 0;
+      color: var(--brand-blue); /* Color del título de opción */
+    }
+    
+    .option-card p {
+      font-size: 16px;
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <main class="landing-content">
+      
+      <div class="logo-header">
+        <h1 class="app-title">MotioMetrics</h1>
+        <div class="logo-container">
+          <!-- Usamos el nuevo logo azul debajo del texto -->
+          <img src="assets/motio-logo-silueta-azul.png" alt="MotioMetrics Logo" class="logo-img" />
+        </div>
+      </div>
+
+      <div class="landing-options">
+        
+        <!-- Opción 1: Interfaz en Vivo -->
+        <a href="analisis_vivo.html" class="card option-card">
+          <h3>Análisis en Vivo</h3>
+          <p class="muted">Conecta el MotioSensor para visualizar y grabar datos en tiempo real.</p>
+        </a>
+
+        <!-- Opción 2: Interfaz CSV -->
+        <a href="analisis_csv.html" class="card option-card">
+          <h3>Análisis de Archivo CSV</h3>
+          <p class="muted">Analiza registros del MotioSensor cargados previamente desde un archivo .csv.</p>
+        </a>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>
